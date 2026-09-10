@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/pasarguard/node/backend"
+	"github.com/pasarguard/node/backend/openvpn" // CUSTOM backend, not upstream — see CONTRIBUTING-custom.md
 	"github.com/pasarguard/node/backend/wireguard"
 	"github.com/pasarguard/node/backend/xray"
 	"github.com/pasarguard/node/common"
@@ -137,6 +138,20 @@ func (c *Controller) StartBackend(ctx context.Context, backend *common.Backend) 
 			return err
 		}
 		c.backend = newBackend
+
+	// CUSTOM: not upstream. See CONTRIBUTING-custom.md — kept as a single
+	// isolated case, everything else in this switch is unmodified upstream.
+	case common.BackendType_OPENVPN:
+		config, err := openvpn.NewConfig(backend.GetConfig())
+		if err != nil {
+			return err
+		}
+		newBackend, err := openvpn.New(c.cfg, config, backend.GetUsers())
+		if err != nil {
+			return err
+		}
+		c.backend = newBackend
+
 	default:
 		return errors.New("invalid backend type")
 	}

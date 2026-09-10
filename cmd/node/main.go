@@ -17,6 +17,11 @@ import (
 )
 
 func main() {
+	// CUSTOM: not upstream — see openvpn_auth.go / CONTRIBUTING-custom.md.
+	// Exits immediately when invoked as the OpenVPN auth-verify hook; a no-op
+	// for every normal server invocation.
+	maybeRunOpenVPNAuthHook()
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)

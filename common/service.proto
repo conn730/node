@@ -16,6 +16,10 @@ message BaseInfoResponse {
 enum BackendType {
   XRAY = 0;
   WIREGUARD = 1;
+  // Custom backends added on top of upstream PasarGuard start at 1000 so a
+  // future upstream addition (e.g. MTPROTO, SINGBOX) never collides with one
+  // of ours on merge. See CONTRIBUTING-custom.md.
+  OPENVPN = 1000;
 }
 
 message Backend {
@@ -137,6 +141,14 @@ message Hysteria {
     string auth = 1;
 }
 
+// OpenVpn is a CUSTOM addition (not upstream PasarGuard) — see backend/openvpn.
+// Auth is username/password (server runs verify-client-cert none), matching
+// the account model the panel already uses for other legacy VPN protocols.
+message OpenVpn {
+    string username = 1;
+    string password = 2;
+}
+
 message Proxy {
     Vmess vmess = 1;
     Vless vless = 2;
@@ -144,6 +156,10 @@ message Proxy {
     Shadowsocks shadowsocks = 4;
     Wireguard wireguard = 5;
     Hysteria hysteria = 6;
+    // CUSTOM: field 7 reserved for our fork's own proxy types going forward
+    // (openvpn today, l2tp/pptp/etc. next) so upstream adding its own field 7
+    // never collides with ours here either.
+    OpenVpn openvpn = 7;
 }
 
 message User {
